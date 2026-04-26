@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>本日の主役 — ナマケモノ文庫</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="novel.css">
+  <script src="novel.js" defer></script>
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header>
+    <a class="back-link" href="index.html">← 一覧へ戻る</a>
+    <a class="site-name" href="index.html">ナマケモノ文庫</a>
+  </header>
+
+  <!-- タイトル・メタ情報 -->
+  <div class="novel-header">
+    <!--
+      タイトルを変更してください。
+    -->
+    <h1 class="novel-title">本日の主役</h1>
+
+    <div class="novel-dates">
+      <!--
+        必要な日付だけを残し、不要な <span> は削除してください。
+        作成日・公開日・更新日 のうち表示したいものだけ使えます。
+      -->
+      <span>
+        <em>作成</em>
+        2025年4月25日
+      </span>
+      <span>
+        <em>公開</em>
+        2025年4月26日
+      </span>
+      <!--
+      <span>
+        <em>更新</em>
+        2025年〇月〇日
+      </span>
+      -->
+    </div>
+  </div>
+
+  <!-- 縦書き本文 -->
+  <div class="novel-body-wrapper">
+    <p class="scroll-hint">← scroll</p>
+    <article class="novel-body" id="js-novel-body">
+      <p>
+        　年に一回、私は『どこかの誰かさん』になってしまう。七年も続いていたら、立派な恒例行事だ。<br>
+        　夢じゃない。本当に誰かになっている。三年目、四年目は自分にメールを送って確認した。去年なんて家の近所の『誰か』になったので、アパートに行ってみた。私は眠っていて、何をしても起きなかった。<br>
+        　気味が悪いのは、その『誰か』はその日、必ず葬式に出る予定があるということだ。葬式に出ている最中のこともあれば、家を出るところから始まることもある。焼き場で仕出し弁当を食べているときもあった。<br>
+        　とはいえ、結構和気藹々としていることが多い。大往生だったのかな。でも、親しい人の死を悼みたかった人もいただろうから、私が葬式に出たことで『誰か』の大切なお別れの時間を奪ってしまった罪悪感が残る。<br>
+        　今年はどうなるんだろう。<br>
+        　そう思いながら眠りにつき、目が覚めると『誰か』になっていた。朝起きたところだな。寝転んだまま軽く深呼吸。妙に懐かしく、不思議と馴染んだ空気だ。<br>
+        　目を閉じたままいつも通り、他の出席者や今回の主役である死者を意識にインプットするために、この人の記憶を探る。初回は海外だったから困ったなぁ。<br>
+        　次の瞬間、私は悲鳴をあげた。ここ、この家は。今日って……。なぜ、いつ？<br>
+        　汗と涙が溢れ、手が冷たくなる。吐きそう。<br>
+        「母さん、大丈夫か」<br>
+        　首から結びかけの黒ネクタイを下げた父の憔悴した顔。喪服を着て数珠を手にした姉もやってくる。<br>
+        　今日は私の葬式だ。
+      </p>
+    </article>
+  </div>
+
+  <!--
+    ════════════════════════════════════════
+    【お題】
+    お題がない作品の場合は、以下の <section class="theme-section"> ごと削除してください。
+    ════════════════════════════════════════
+  -->
+  <section class="theme-section" id="js-theme-section">
+    <div class="theme-toggle-bar" id="js-theme-toggle">
+      <span class="theme-label">お題</span>
+      <span class="theme-chevron">▲</span>
+    </div>
+    <div class="theme-body">
+      <div class="theme-inner">
+        恒例行事・悲しみ・インプット
+      </div>
+    </div>
+  </section>
+
+  <!-- フッター -->
+  <footer>
+    <p>© 大懶獣舎</p>
+    <p>All rights reserved.</p>
+  </footer>
+
+</body>
+</html>

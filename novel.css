@@ -1,0 +1,217 @@
+/* ════════════════════════════════════════
+   novel.css — 小説ページ専用スタイル
+   novel-template.html（およびそのコピー）で読み込む
+   ════════════════════════════════════════ */
+
+/* ── ページ全体レイアウト ── */
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;        /* ビューポート高さに固定 */
+  overflow: hidden;     /* body 自体はスクロールさせない */
+}
+
+/* ── ヘッダー ── */
+header {
+  padding: 1.5rem 4rem;
+  flex-shrink: 0;
+}
+
+/* 一覧へ戻るリンク */
+.back-link {
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 300;
+  transition: color 0.15s;
+}
+.back-link:hover { color: var(--fg); }
+
+/* ヘッダー中央のサイト名 */
+.site-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1rem;
+  font-weight: 400;
+  text-decoration: none;
+  color: var(--fg);
+  letter-spacing: 0.02em;
+}
+
+/* ── 作品ヘッダー（タイトル・日付エリア）── */
+.novel-header {
+  padding: 3rem 4rem 1.5rem;
+  flex-shrink: 0;
+  animation: fadeUp 0.5s ease both;
+}
+
+.novel-genre {
+  font-size: 0.68rem;
+  letter-spacing: 0.35em;
+  color: var(--muted);
+  font-weight: 300;
+  margin-bottom: 1rem;
+}
+
+.novel-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin-bottom: 1.4rem;
+}
+
+.novel-dates {
+  display: flex;
+  gap: 2.5rem;
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-weight: 300;
+  letter-spacing: 0.06em;
+}
+
+.novel-dates span {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+}
+
+.novel-dates em {
+  font-style: normal;
+  font-size: 0.62rem;
+  letter-spacing: 0.25em;
+  opacity: 0.65;
+  text-transform: uppercase;
+}
+
+/* ── 縦書き本文エリア（flex で残り高さをすべて占有）── */
+.novel-body-wrapper {
+  flex: 1;              /* 残りの縦スペースを埋める */
+  min-height: 0;        /* flex child のオーバーフロー許可に必要 */
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem 4rem 1.5rem;
+  overflow: hidden;     /* wrapper 自体はスクロールしない */
+  animation: fadeUp 0.5s ease 0.1s both;
+}
+
+/* ← scroll ヒント */
+.scroll-hint {
+  flex-shrink: 0;
+  writing-mode: vertical-rl;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  color: var(--muted);
+  font-weight: 300;
+  opacity: 0.5;
+  margin-right: 1.5rem;
+  padding-top: 0.25rem;
+  user-select: none;
+}
+
+/* 縦書き本文：wrapper の高さいっぱいに広がり、横方向のみスクロール */
+.novel-body {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: 'Noto Serif JP', serif;
+  font-size: clamp(0.93rem, 1.4vw, 1.02rem);
+  line-height: 2.5;
+  letter-spacing: 0.07em;
+  font-weight: 300;
+  color: var(--fg);
+
+  /* wrapper の高さをそのまま使う */
+  height: 100%;
+  min-height: 0;
+
+  /* 横（＝物語の進む方向）のみスクロール */
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scroll-behavior: smooth;
+  padding-bottom: 1rem; /* スクロールバー分の余白 */
+}
+
+/* スクロールバー */
+.novel-body::-webkit-scrollbar       { height: 2px; }
+.novel-body::-webkit-scrollbar-track { background: var(--border); }
+.novel-body::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 1px; }
+
+/* 段落間スペース（縦書きなので margin-left） */
+.novel-body p            { margin-left: 2.5em; }
+.novel-body p:last-child { margin-left: 0; }
+
+/* ルビ */
+ruby rt { font-size: 0.5em; }
+
+/* ── お題エリア（フッター直上）── */
+.theme-section {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
+}
+
+.theme-toggle-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 4rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.theme-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.35em;
+  color: var(--muted);
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
+.theme-chevron {
+  font-size: 0.7rem;
+  color: var(--muted);
+  transition: transform 0.25s ease;
+  display: inline-block;
+}
+
+.theme-section.open .theme-chevron { transform: rotate(180deg); }
+
+.theme-body {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.theme-section.open .theme-body {
+  max-height: 200px;
+  opacity: 1;
+}
+
+.theme-inner {
+  padding: 0.75rem 4rem 1.25rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  line-height: 1.9;
+  background: var(--theme-bg);
+}
+
+/* ── フッター ── */
+footer {
+  flex-shrink: 0;
+  /* style.css の共通スタイルを継承 */
+}
+
+/* ════════════════════════════════
+   レスポンシブ
+   ════════════════════════════════ */
+@media (max-width: 640px) {
+  header              { padding: 1.2rem 1.5rem; }
+  .novel-header       { padding: 2rem 1.5rem 1rem; }
+  .novel-body-wrapper { padding: 0.75rem 1.5rem 1rem; }
+  .theme-toggle-bar   { padding: 0.85rem 1.5rem; }
+  .theme-inner        { padding: 0.75rem 1.5rem 1.25rem; }
+  footer              { padding: 1.25rem 1.5rem; }
+}
