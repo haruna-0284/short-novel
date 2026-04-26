@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ナマケモノ文庫</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body   { display: grid; grid-template-rows: auto 1fr auto; }
+    header { padding: 3.5rem 4rem 2.5rem; align-items: flex-end; animation: fadeIn 0.5s ease both; }
+    main   { padding: 0 4rem 4rem; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <!--
+        サイトのタイトルを変更してください。
+        例: <h1 class="site-title">山田花子の文庫<small>Short Stories</small></h1>
+      -->
+      <h1 class="site-title">
+        作品集
+        <small>Short Stories</small>
+      </h1>
+    </div>
+    <span class="header-count" id="js-count"></span>
+  </header>
+
+  <main>
+    <!--
+      ════════════════════════════════════════════════
+      【作品の追加方法】
+      <ul id="js-novel-list"> の中に <li> を追加してください。
+      以下のテンプレートをコピーして使ってください。
+
+      <li class="novel-item" data-novel>
+        <a class="novel-link" href="novel-x.html">
+          <div>
+            <span class="novel-title-text">タイトル</span>
+            <p class="novel-date">2026年〇月〇日</p>
+          </div>
+        </a>
+      </li>
+
+      ════════════════════════════════════════════════
+    -->
+    <ul class="novel-list" id="js-novel-list">
+
+      <!-- ↓ ここから作品を追加 ↓ -->
+       <li class="novel-item" data-novel>
+        <a class="novel-link" href="novel-35.html">
+          <div>
+            <span class="novel-title-text">人は見た目が九割くらい</span>
+            <p class="novel-date">2026年4月26日</p>
+          </div>
+        </a>
+      </li>
+      <li class="novel-item" data-novel>
+        <a class="novel-link" href="novel-34.html">
+          <div>
+            <span class="novel-title-text">合否だゾウ</span>
+            <p class="novel-date">2026年4月26日</p>
+          </div>
+        </a>
+      </li>
+      <li class="novel-item" data-novel>
+        <a class="novel-link" href="novel-33.html">
+          <div>
+            <span class="novel-title-text">アマゾネス忠臣蔵</span>
+            <p class="novel-date">2026年4月26日</p>
+          </div>
+        </a>
+      </li>
+      <li class="novel-item" data-novel>
+        <a class="novel-link" href="novel-32.html">
+          <div>
+            <span class="novel-title-text">本日の主役</span>
+            <p class="novel-date">2026年4月26日</p>
+          </div>
+        </a>
+      </li>
+      <li class="novel-item" data-novel>
+        <a class="novel-link" href="novel-31.html">
+          <div>
+            <span class="novel-title-text">手打ちにしよう</span>
+            <p class="novel-date">2026年4月26日</p>
+          </div>
+        </a>
+      </li>
+
+    </ul>
+
+    <!-- ページネーション（JS が自動制御） -->
+    <nav class="pagination" id="js-pagination" hidden>
+      <button class="pagination-btn" id="js-prev">← 前へ</button>
+      <span class="pagination-info" id="js-page-info"></span>
+      <button class="pagination-btn" id="js-next">次へ →</button>
+    </nav>
+  </main>
+
+  <footer>
+    <!-- © の後ろをあなたの名前に変えてください -->
+    <p>© 大懶獣舎</p>
+    <p>All rights reserved.</p>
+  </footer>
+
+  <script>
+    (() => {
+      const PER_PAGE = 20; // 1ページあたりの表示件数
+
+      const list     = document.getElementById('js-novel-list');
+      const countEl  = document.getElementById('js-count');
+      const pagination = document.getElementById('js-pagination');
+      const prevBtn  = document.getElementById('js-prev');
+      const nextBtn  = document.getElementById('js-next');
+      const pageInfo = document.getElementById('js-page-info');
+
+      // data-novel 属性を持つ <li> を取得
+      const items = Array.from(list.querySelectorAll('li[data-novel]'));
+      const total = items.length;
+      const totalPages = Math.ceil(total / PER_PAGE);
+      let currentPage = 1;
+
+      // 作品数表示
+      if (total > 0) countEl.textContent = total + ' 作品';
+
+      function render(page) {
+        const start = (page - 1) * PER_PAGE;
+        const end   = start + PER_PAGE;
+
+        items.forEach((item, i) => {
+          item.hidden = !(i >= start && i < end);
+          // アニメーション用のディレイをリセット
+          const rel = i - start;
+          item.style.animationDelay = rel >= 0 ? (rel * 0.03) + 's' : '0s';
+        });
+
+        // ページネーション UI
+        if (totalPages > 1) {
+          pagination.hidden = false;
+          pageInfo.textContent = page + ' / ' + totalPages;
+          prevBtn.disabled = page <= 1;
+          nextBtn.disabled = page >= totalPages;
+        }
+      }
+
+      prevBtn.addEventListener('click', () => {
+        if (currentPage > 1) { currentPage--; render(currentPage); window.scrollTo(0, 0); }
+      });
+      nextBtn.addEventListener('click', () => {
+        if (currentPage < totalPages) { currentPage++; render(currentPage); window.scrollTo(0, 0); }
+      });
+
+      render(currentPage);
+    })();
+  </script>
+
+</body>
+</html>
