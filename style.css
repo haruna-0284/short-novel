@@ -55,7 +55,7 @@ footer p {
 /* サイトタイトル */
 .site-title {
   font-family: 'DM Serif Display', serif;
-  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
   font-weight: 400;
   letter-spacing: -0.01em;
   line-height: 1;
