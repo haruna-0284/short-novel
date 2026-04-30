@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ページ数カウンター</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f5f0;
+    --surface: #ffffff;
+    --border: #d8d3c8;
+    --border-strong: #a09888;
+    --text: #1a1714;
+    --text-muted: #7a7060;
+    --accent: #3a3028;
+    --page-divider: #c8bfb0;
+    --font-body: 'Noto Serif JP', serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    padding: 48px 24px;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  header {
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h1 {
+    font-size: 1.1rem;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  label {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-family: var(--font-mono);
+  }
+
+  input[type="number"] {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.15s;
+    -moz-appearance: textfield;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+  input[type="number"]:focus {
+    border-color: var(--accent);
+  }
+
+  .textarea-wrap {
+    margin-bottom: 20px;
+  }
+
+  textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    padding: 16px;
+    resize: vertical;
+    min-height: 160px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  textarea:focus {
+    border-color: var(--accent);
+  }
+
+  .char-count {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  .result-bar {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 18px 20px;
+    background: var(--accent);
+    color: var(--bg);
+    margin-bottom: 32px;
+    min-height: 60px;
+  }
+
+  .result-bar .label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    white-space: nowrap;
+  }
+
+  .result-bar .value {
+    font-family: var(--font-mono);
+    font-size: 2rem;
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .result-bar .unit {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin-left: 4px;
+  }
+
+  .result-bar .divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(255,255,255,0.2);
+  }
+
+  .result-bar .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .preview-section {
+    margin-top: 8px;
+  }
+
+  .preview-header {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .preview-area {
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  .page-block {
+    padding: 28px 32px 28px 52px; /* 左にアイコン用の余白 */
+    position: relative;
+  }
+
+  .line-wrap {
+    position: relative;
+  }
+
+  .line-indent-icon {
+    position: absolute;
+    left: -24px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.55rem;
+    color: #d94f4f;
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .page-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 32px;
+    border-top: 1px solid var(--page-divider);
+    border-bottom: 1px solid var(--page-divider);
+    background: #f0ece4;
+    height: 28px;
+  }
+
+  .page-divider-label {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  .page-line {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    line-height: 1.9;
+    color: var(--text);
+    white-space: pre;
+    word-break: break-all;
+  }
+
+  .empty-state {
+    padding: 48px 32px;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+  }
+
+  .last-page-note {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    padding: 4px 0;
+  }
+
+  /* ── チェック ── */
+  .check-section {
+    margin-bottom: 24px;
+  }
+
+  .check-header {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .check-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .check-item.ok {
+    border-color: #b8d4b8;
+    background: #f4faf4;
+    color: #3a6e3a;
+  }
+
+  .check-item.warn {
+    border-color: #e8c878;
+    background: #fdfaf0;
+    color: #6e5a18;
+  }
+
+  .check-item.idle {
+    color: var(--text-muted);
+  }
+
+  .check-icon {
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    margin-top: 0.05em;
+  }
+
+  .check-body { flex: 1; }
+  .check-title { margin-bottom: 2px; }
+
+  .check-detail {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  /* ── コピーボタン ── */
+  .textarea-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+  }
+
+  .btn-copy {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+
+  .btn-copy:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .btn-copy.copied {
+    border-color: #3a6e3a;
+    color: #3a6e3a;
+    background: #f4faf4;
+  }
+
+  /* ── プレビュー内ハイライト ── */
+  .hl-indent { background: #ffe0b2; border-radius: 2px; }    /* 行頭全角SP */
+  .hl-ascii  { background: #b3d4ff; border-radius: 2px; }    /* 半角英数字 */
+  .hl-bura   { opacity: 0.45; }                              /* ぶら下がり文字 */
+
+  @media (max-width: 520px) {
+    .controls { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .result-bar { gap: 16px; flex-wrap: wrap; }
+    .page-block { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>ページ数カウンター</h1>
+  </header>
+
+  <div class="controls">
+    <div class="field">
+      <label>一行の文字数</label>
+      <input type="number" id="charsPerLine" value="40" min="1" max="200">
+    </div>
+    <div class="field">
+      <label>一ページの行数</label>
+      <input type="number" id="linesPerPage" value="20" min="1" max="200">
+    </div>
+  </div>
+
+  <div class="textarea-wrap">
+    <textarea id="inputText" placeholder="ここに文字列を入力してください…"></textarea>
+    <div class="textarea-footer">
+      <button class="btn-copy" id="btnCopy" onclick="copyText()">コピー</button>
+      <div class="char-count" id="charCount">0 文字</div>
+    </div>
+  </div>
+
+  <div class="result-bar" id="resultBar">
+    <div class="stat">
+      <span class="label">文字数</span>
+      <span class="value" id="resChars">—</span>
+    </div>
+    <div class="divider"></div>
+    <div class="stat">
+      <span class="label">行数</span>
+      <span class="value" id="resLines">—</span>
+    </div>
+    <div class="divider"></div>
+    <div class="stat">
+      <span class="label">ページ数</span>
+      <span class="value" id="resPages">—<span class="unit">p</span></span>
+    </div>
+  </div>
+
+  <div class="check-section" id="checkSection" style="display:none">
+    <div class="check-header">チェック</div>
+    <div class="check-list">
+      <div class="check-item idle" id="chkIndent">
+        <span class="check-icon" id="chkIndentIcon">○</span>
+        <div class="check-body">
+          <div class="check-title">行頭の全角スペース</div>
+          <div class="check-detail" id="chkIndentDetail" style="display:none"></div>
+        </div>
+      </div>
+      <div class="check-item idle" id="chkAscii">
+        <span class="check-icon" id="chkAsciiIcon">○</span>
+        <div class="check-body">
+          <div class="check-title">半角英数字の混在</div>
+          <div class="check-detail" id="chkAsciiDetail" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-section" id="previewSection" style="display:none">
+    <div class="preview-header">プレビュー</div>
+    <div class="preview-area" id="previewArea"></div>
+  </div>
+</div>
+
+<script>
+  const inputText    = document.getElementById('inputText');
+  const charsPerLine = document.getElementById('charsPerLine');
+  const linesPerPage = document.getElementById('linesPerPage');
+  const charCountEl  = document.getElementById('charCount');
+  const resChars     = document.getElementById('resChars');
+  const resLines     = document.getElementById('resLines');
+  const resPages     = document.getElementById('resPages');
+  const previewSection = document.getElementById('previewSection');
+  const previewArea  = document.getElementById('previewArea');
+  const checkSection = document.getElementById('checkSection');
+
+  // 禁則文字：行頭禁止（終わり括弧・句読点など）
+  const KINSOKU_START = new Set(`。、．，！？」』】〕〉》〙〗）'；:`);
+
+  /**
+   * 禁則処理付き行分割（ぶら下がり方式）
+   * 行頭に来てはいけない文字は、前の行末に「ぶら下げ」て表示する。
+   * → その行は cpl+n 文字になるが、行数カウントは1行として扱う。
+   * ページ数計算・行数カウントは「ぶら下げ前」の折り返し数で行う。
+   */
+  function wrapWithKinsoku(text, cpl) {
+    const lines = [];
+    for (const logical of text.split('\n')) {
+      if (logical.length === 0) {
+        lines.push({ text: '', overflow: 0, isParagraphStart: true });
+        continue;
+      }
+      const chars = [...logical];
+      let start = 0;
+      let isFirst = true;
+      while (start < chars.length) {
+        let end = start + cpl;
+        if (end >= chars.length) {
+          lines.push({ text: chars.slice(start).join(''), overflow: 0, isParagraphStart: isFirst });
+          break;
+        }
+        let extra = 0;
+        while (end < chars.length && KINSOKU_START.has(chars[end])) {
+          end++; extra++;
+        }
+        lines.push({ text: chars.slice(start, end).join(''), overflow: extra, isParagraphStart: isFirst });
+        start = start + cpl + extra;
+        isFirst = false;
+      }
+    }
+    return lines;
+  }
+
+  // ---- チェック ----
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // 行頭に来てもインデント不要な文字（開き括弧類）
+  const OPEN_BRACKETS = new Set('（「『【〔〈《〘〖(「');
+
+  /**
+   * 行頭全角スペースチェック
+   * 対象：isParagraphStart === true の行（改行直後）
+   *
+   * ルール：
+   *   - 空行                         → 全角SP不要（スキップ）
+   *   - 開き括弧で始まる行           → 全角SP不要（スキップ）
+   *   - それ以外で全角SPなし         → missing（不足）
+   *   - それ以外で全角SPが2個以上    → extra（多すぎ）※オプション
+   *
+   * 折り返し行（isParagraphStart === false）に全角SPがある → extra
+   */
+  function checkIndent(wrappedLines) {
+    const missing = [];
+    const extra   = [];
+
+    wrappedLines.forEach((wl, i) => {
+      const text = wl.text;
+      const lineNo = i + 1;
+
+      if (wl.isParagraphStart) {
+        // 空行はスキップ
+        if (text.length === 0) return;
+        // 開き括弧で始まる場合はスキップ
+        const firstChar = [...text][0];
+        if (OPEN_BRACKETS.has(firstChar)) return;
+        // 全角SPで始まらない → インデント不足
+        if (!text.startsWith('\u3000')) {
+          missing.push({ lineNo, text });
+        }
+        // 全角SPが2個以上 → 多すぎ
+        else if (text.startsWith('\u3000\u3000')) {
+          extra.push({ lineNo, text, reason: '全角スペースが2個以上' });
+        }
+      } else {
+        // 折り返し行に全角SP → 余分
+        if (text.startsWith('\u3000')) {
+          extra.push({ lineNo, text, reason: '折り返し行に全角スペース' });
+        }
+      }
+    });
+
+    return { missing, extra };
+  }
+
+  /** 半角英数字チェック：出現箇所を返す */
+  function checkAscii(lines) {
+    const ASCII_RE = /[A-Za-z0-9]/g;
+    const bad = [];
+    lines.forEach((ln, i) => {
+      const matches = [...ln.text.matchAll(ASCII_RE)];
+      if (matches.length) bad.push({ lineNo: i + 1, text: ln.text, matches });
+    });
+    return bad;
+  }
+
+  /** チェック項目を描画する汎用関数 */
+  function renderCheckItem(itemEl, iconEl, detailEl, issues) {
+    if (issues.length === 0) {
+      itemEl.className = 'check-item ok';
+      iconEl.textContent = '✓';
+      detailEl.style.display = 'none';
+    } else {
+      itemEl.className = 'check-item warn';
+      iconEl.textContent = '!';
+      detailEl.style.display = 'block';
+      const shown = issues.slice(0, 5);
+      detailEl.textContent =
+        shown.map(r => `行 ${r.lineNo}：${r.text}`).join('\n') +
+        (issues.length > 5 ? `\n…他 ${issues.length - 5} 箇所` : '');
+    }
+  }
+
+  /** インデントチェック結果を描画（missing / extra を統合） */
+  function renderIndentCheck(indentResult) {
+    const itemEl   = document.getElementById('chkIndent');
+    const iconEl   = document.getElementById('chkIndentIcon');
+    const detailEl = document.getElementById('chkIndentDetail');
+    const { missing, extra } = indentResult;
+    const allIssues = missing.length + extra.length;
+
+    if (allIssues === 0) {
+      itemEl.className = 'check-item ok';
+      iconEl.textContent = '✓';
+      detailEl.style.display = 'none';
+      return;
+    }
+
+    itemEl.className = 'check-item warn';
+    iconEl.textContent = '!';
+    detailEl.style.display = 'block';
+
+    const lines = [];
+    if (missing.length > 0) {
+      lines.push('［インデント不足］');
+      missing.slice(0, 5).forEach(r => lines.push(`  行 ${r.lineNo}：${r.text}`));
+      if (missing.length > 5) lines.push(`  …他 ${missing.length - 5} 箇所`);
+    }
+    if (extra.length > 0) {
+      if (lines.length) lines.push('');
+      lines.push('［余分な全角スペース］');
+      extra.slice(0, 5).forEach(r => lines.push(`  行 ${r.lineNo}（${r.reason}）：${r.text}`));
+      if (extra.length > 5) lines.push(`  …他 ${extra.length - 5} 箇所`);
+    }
+    detailEl.textContent = lines.join('\n');
+  }
+
+  /** プレビュー行を span でハイライトした HTML を返す */
+  function buildLineHtml(lineObj, highlightIndent, highlightAscii) {
+    const ln = lineObj.text;
+    const overflow = lineObj.overflow;
+    if (!ln) return '\u00A0';
+
+    const chars = [...ln];
+    const baseLen = chars.length - overflow; // ぶら下がり前の文字数
+    let html = '';
+    let pos = 0;
+
+    // 行頭全角スペースをまとめてハイライト
+    if (highlightIndent && chars[0] === '\u3000') {
+      let end = 0;
+      while (end < chars.length && chars[end] === '\u3000') end++;
+      html += `<span class="hl-indent">${'\u3000'.repeat(end)}</span>`;
+      pos = end;
+    }
+
+    for (let i = pos; i < chars.length; i++) {
+      const ch = chars[i];
+      // ぶら下がり部分をマーク
+      const isBura = overflow > 0 && i >= baseLen;
+      let spanClass = '';
+      if (highlightAscii && /[A-Za-z0-9]/.test(ch)) spanClass = 'hl-ascii';
+      if (isBura) spanClass = spanClass ? spanClass + ' hl-bura' : 'hl-bura';
+
+      if (spanClass) {
+        html += `<span class="${spanClass}">${escHtml(ch)}</span>`;
+      } else {
+        html += escHtml(ch);
+      }
+    }
+    return html;
+  }
+
+  function copyText() {
+    const text = inputText.value;
+    if (!text) return;
+
+    const btn = document.getElementById('btnCopy');
+
+    const onSuccess = () => {
+      btn.textContent = 'コピーしました';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'コピー';
+        btn.classList.remove('copied');
+      }, 2000);
+    };
+
+    const onFail = () => {
+      // フォールバック：textarea を選択して execCommand
+      inputText.select();
+      inputText.setSelectionRange(0, inputText.value.length);
+      try {
+        const ok = document.execCommand('copy');
+        if (ok) { onSuccess(); return; }
+      } catch(e) {}
+      btn.textContent = 'コピー失敗';
+      setTimeout(() => { btn.textContent = 'コピー'; }, 2000);
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(onSuccess).catch(onFail);
+    } else {
+      onFail();
+    }
+  }
+
+  function calc() {
+    const text = inputText.value;
+    const cpl  = Math.max(1, parseInt(charsPerLine.value) || 40);
+    const lpp  = Math.max(1, parseInt(linesPerPage.value) || 20);
+
+    const charLen = text.length;
+    charCountEl.textContent = charLen.toLocaleString() + ' 文字';
+
+    if (charLen === 0) {
+      resChars.textContent = '—';
+      resLines.textContent = '—';
+      resPages.innerHTML   = '—';
+      previewSection.style.display = 'none';
+      checkSection.style.display   = 'none';
+      return;
+    }
+
+    const wrappedLines = wrapWithKinsoku(text, cpl);
+    const totalLines   = wrappedLines.length;
+    const totalPages   = Math.ceil(totalLines / lpp);
+
+    resChars.textContent = charLen.toLocaleString();
+    resLines.textContent = totalLines.toLocaleString();
+    resPages.innerHTML   = totalPages.toLocaleString() + '<span class="unit">p</span>';
+
+    // ---- チェック ----
+    const indentResult = checkIndent(wrappedLines);
+    const asciiIssues  = checkAscii(wrappedLines);
+
+    renderIndentCheck(indentResult);
+    renderCheckItem(
+      document.getElementById('chkAscii'),
+      document.getElementById('chkAsciiIcon'),
+      document.getElementById('chkAsciiDetail'),
+      asciiIssues
+    );
+    checkSection.style.display = 'block';
+
+    const hasIndentIssue = indentResult.missing.length > 0 || indentResult.extra.length > 0;
+    const hasAsciiIssue  = asciiIssues.length > 0;
+
+    // 問題行番号セット（1-indexed）
+    const indentMissingSet = new Set(indentResult.missing.map(r => r.lineNo));
+    const indentExtraSet   = new Set(indentResult.extra.map(r => r.lineNo));
+    const asciiBadSet      = new Set(asciiIssues.map(r => r.lineNo));
+
+    // ---- プレビュー ----
+    previewArea.innerHTML = '';
+
+    for (let p = 0; p < totalPages; p++) {
+      const pageLines = wrappedLines.slice(p * lpp, (p + 1) * lpp);
+
+      if (p > 0) {
+        const divEl = document.createElement('div');
+        divEl.className = 'page-divider';
+        const lbl = document.createElement('span');
+        lbl.className = 'page-divider-label';
+        lbl.textContent = `PAGE  ${p + 1}`;
+        divEl.appendChild(lbl);
+        previewArea.appendChild(divEl);
+      }
+
+      const block = document.createElement('div');
+      block.className = 'page-block';
+
+      if (p === 0) {
+        const pg1 = document.createElement('div');
+        pg1.className = 'last-page-note';
+        pg1.style.marginBottom = '10px';
+        pg1.textContent = 'PAGE  1';
+        block.appendChild(pg1);
+      }
+
+      pageLines.forEach((ln, idx) => {
+        const globalLineNo = p * lpp + idx + 1;
+        const hasIndentErr = hasIndentIssue && (indentMissingSet.has(globalLineNo) || indentExtraSet.has(globalLineNo));
+        const hlAscii      = hasAsciiIssue && asciiBadSet.has(globalLineNo);
+
+        const wrap = document.createElement('div');
+        wrap.className = 'line-wrap';
+
+        if (hasIndentErr) {
+          const icon = document.createElement('span');
+          icon.className = 'line-indent-icon';
+          icon.textContent = '●';
+          wrap.appendChild(icon);
+        }
+
+        const lineEl = document.createElement('div');
+        lineEl.className = 'page-line';
+        lineEl.innerHTML = buildLineHtml(ln, hasIndentErr, hlAscii);
+        wrap.appendChild(lineEl);
+        block.appendChild(wrap);
+      });
+
+      if (p === totalPages - 1) {
+        const remaining = lpp - pageLines.length;
+        for (let r = 0; r < remaining; r++) {
+          const wrap = document.createElement('div');
+          wrap.className = 'line-wrap';
+          const lineEl = document.createElement('div');
+          lineEl.className = 'page-line';
+          lineEl.style.opacity = '0.15';
+          lineEl.textContent = '·'.repeat(Math.min(cpl, 30));
+          wrap.appendChild(lineEl);
+          block.appendChild(wrap);
+        }
+      }
+
+      previewArea.appendChild(block);
+    }
+
+    previewSection.style.display = 'block';
+  }
+
+  inputText.addEventListener('input', calc);
+  charsPerLine.addEventListener('input', calc);
+  linesPerPage.addEventListener('input', calc);
+  calc();
+</script>
+</body>
+</html>

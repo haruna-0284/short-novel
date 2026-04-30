@@ -13,8 +13,32 @@ body {
 
 /* ── ヘッダー ── */
 header {
+  position: relative;
   padding: 1.5rem 4rem;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.theme-button {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--theme-bg);
+  color: var(--fg);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+}
+
+.theme-button:hover,
+.theme-button:focus {
+  background: #f0f0f0;
 }
 
 /* 一覧へ戻るリンク */
@@ -60,6 +84,7 @@ header {
   letter-spacing: -0.01em;
   line-height: 1.25;
   margin-bottom: 1.4rem;
+  cursor: pointer;
 }
 
 .novel-dates {
@@ -129,6 +154,8 @@ header {
   overflow-x: auto;
   overflow-y: hidden;
 
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
   scroll-behavior: smooth;
   padding-bottom: 1rem; /* スクロールバー分の余白 */
 }
@@ -145,49 +172,46 @@ header {
 /* ルビ */
 ruby rt { font-size: 0.5em; }
 
-/* ── お題エリア（フッター直上）── */
+/* ── お題エリア（ヘッダー直下のオーバーレイ）── */
 .theme-section {
-  flex-shrink: 0;
-  border-top: 1px solid var(--border);
-  padding-bottom: env(safe-area-inset-bottom, 0.5rem);
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: 20;
+  overflow: hidden;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
+  pointer-events: none;
 }
-
-.theme-toggle-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.85rem 4rem;
-  cursor: pointer;
-  user-select: none;
-}
-
-.theme-label {
-  font-size: 0.68rem;
-  letter-spacing: 0.35em;
-  color: var(--muted);
-  font-weight: 300;
-  text-transform: uppercase;
-}
-
-.theme-chevron {
-  font-size: 0.7rem;
-  color: var(--muted);
-  transition: transform 0.25s ease;
-  display: inline-block;
-}
-
-.theme-section.open .theme-chevron { transform: rotate(180deg); }
 
 .theme-body {
   overflow: hidden;
   max-height: 0;
   opacity: 0;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
+  transform-origin: top;
+  transform: translateY(-0.5rem) scaleY(0.98);
+  transition: max-height 0.35s ease, opacity 0.35s ease, transform 0.35s ease;
+}
+
+.theme-section.open {
+  pointer-events: auto;
 }
 
 .theme-section.open .theme-body {
-  max-height: 200px;
+  max-height: 260px;
   opacity: 1;
+  transform: translateY(0) scaleY(1);
+}
+
+.theme-inner {
+  padding: 1rem 4rem 1.5rem;
+  font-size: 0.95rem;
+  color: var(--fg);
+  letter-spacing: 0.05em;
+  line-height: 1.9;
+  background: var(--theme-bg);
 }
 
 .theme-inner {

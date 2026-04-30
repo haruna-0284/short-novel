@@ -8,27 +8,16 @@
   const themeSection = document.getElementById('js-theme-section');
   const themeToggle  = document.getElementById('js-theme-toggle');
 
+  const novelTitle = document.querySelector('.novel-title');
+
+  const toggleTheme = () => {
+    themeSection.classList.toggle('open');
+  };
+
   if (themeSection && themeToggle) {
-    themeToggle.addEventListener('click', () => {
-      themeSection.classList.toggle('open');
-    });
+    themeToggle.addEventListener('click', toggleTheme);
+    if (novelTitle) novelTitle.addEventListener('click', toggleTheme);
   }
 
-  /* ── タッチスワイプで縦書きエリアを横スクロール（スマホ対応）── */
-  const novelBody = document.getElementById('js-novel-body');
-
-  if (novelBody) {
-    let startX = 0;
-    let startScrollLeft = 0;
-
-    novelBody.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-      startScrollLeft = novelBody.scrollLeft;
-    }, { passive: true });
-
-    novelBody.addEventListener('touchmove', (e) => {
-      const dx = startX - e.touches[0].clientX;
-      novelBody.scrollLeft = startScrollLeft + dx;
-    }, { passive: true });
-  }
+  /* ── タッチスクロールは CSS のネイティブ処理に任せる */
 })();
