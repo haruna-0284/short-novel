@@ -26,19 +26,22 @@ header {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  padding: 0.6rem 1rem;
-  border-radius: 999px;
+  padding: 0.5em 1.4em;
+  border-radius: 0;
   border: 1px solid var(--border);
-  background: var(--theme-bg);
-  color: var(--fg);
-  font-size: 0.85rem;
-  letter-spacing: 0.1em;
+  background: none;
+  color: var(--muted);
+  font-family: 'Noto Serif JP', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
   cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
 }
 
 .theme-button:hover,
 .theme-button:focus {
-  background: #f0f0f0;
+  border-color: var(--fg);
+  color: var(--fg);
 }
 
 /* 一覧へ戻るリンク */
