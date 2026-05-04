@@ -321,9 +321,16 @@
     justify-content: space-between;
     align-items: center;
     margin-top: 6px;
+    gap: 10px;
   }
 
-  .btn-copy {
+  .footer-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-copy, .btn-clear {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -338,15 +345,47 @@
     transition: border-color 0.15s, color 0.15s, background 0.15s;
   }
 
-  .btn-copy:hover {
+  .btn-copy:hover, .btn-clear:hover {
     border-color: var(--accent);
     color: var(--accent);
+  }
+
+  .btn-clear:hover {
+    border-color: #c0392b;
+    color: #c0392b;
   }
 
   .btn-copy.copied {
     border-color: #3a6e3a;
     color: #3a6e3a;
     background: #f4faf4;
+  }
+
+  .br-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .br-toggle:has(input:checked) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .br-toggle input {
+    accent-color: var(--accent);
+    cursor: pointer;
+    width: 13px;
+    height: 13px;
   }
 
   /* ── プレビュー内ハイライト ── */
@@ -381,7 +420,13 @@
   <div class="textarea-wrap">
     <textarea id="inputText" placeholder="ここに文字列を入力してください…"></textarea>
     <div class="textarea-footer">
-      <button class="btn-copy" id="btnCopy" onclick="copyText()">コピー</button>
+      <div class="footer-left">
+        <button class="btn-copy" id="btnCopy" onclick="copyText()">コピー</button>
+        <label class="br-toggle">
+          <input type="checkbox" id="chkBr"> 行末に &lt;br&gt;
+        </label>
+        <button class="btn-clear" onclick="clearText()">クリア</button>
+      </div>
       <div class="char-count" id="charCount">0 文字</div>
     </div>
   </div>
@@ -630,9 +675,19 @@
     return html;
   }
 
+  function clearText() {
+    inputText.value = '';
+    calc();
+  }
+
   function copyText() {
-    const text = inputText.value;
-    if (!text) return;
+    const raw = inputText.value;
+    if (!raw) return;
+
+    const addBr = document.getElementById('chkBr').checked;
+    const text = addBr
+      ? raw.split('\n').map(line => line + '<br>').join('\n')
+      : raw;
 
     const btn = document.getElementById('btnCopy');
 
@@ -646,15 +701,21 @@
     };
 
     const onFail = () => {
-      // フォールバック：textarea を選択して execCommand
-      inputText.select();
-      inputText.setSelectionRange(0, inputText.value.length);
+      // フォールバック：一時 textarea に書き込んで execCommand
+      const tmp = document.createElement('textarea');
+      tmp.value = text;
+      tmp.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+      document.body.appendChild(tmp);
+      tmp.select();
+      tmp.setSelectionRange(0, tmp.value.length);
       try {
         const ok = document.execCommand('copy');
-        if (ok) { onSuccess(); return; }
-      } catch(e) {}
-      btn.textContent = 'コピー失敗';
-      setTimeout(() => { btn.textContent = 'コピー'; }, 2000);
+        if (ok) { onSuccess(); }
+        else { btn.textContent = 'コピー失敗'; setTimeout(() => { btn.textContent = 'コピー'; }, 2000); }
+      } catch(e) {
+        btn.textContent = 'コピー失敗'; setTimeout(() => { btn.textContent = 'コピー'; }, 2000);
+      }
+      document.body.removeChild(tmp);
     };
 
     if (navigator.clipboard && navigator.clipboard.writeText) {

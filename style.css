@@ -48,6 +48,28 @@ footer p {
   font-weight: 300;
 }
 
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  transition: color 0.15s;
+}
+
+.contact-link img {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+}
+
+.contact-link:hover,
+.contact-link:focus {
+  color: var(--fg);
+}
+
 /* ════════════════════════════════
    index.html 用
    ════════════════════════════════ */
