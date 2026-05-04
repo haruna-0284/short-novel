@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ようこそ、サンタさん — ナマケモノ文庫</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="novel.css">
+  <script src="novel.js" defer></script>
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header>
+    <a class="back-link" href="index.html">← 一覧へ戻る</a>
+    <button class="theme-button" id="js-theme-toggle" type="button">お題</button>
+    <a class="site-name" href="index.html">ナマケモノ文庫</a>
+
+    <section class="theme-section" id="js-theme-section">
+      <div class="theme-body">
+        <div class="theme-inner">
+          サンタクロース・パーカッション・しっとり
+        </div>
+      </div>
+    </section>
+  </header>
+
+  <!-- タイトル・メタ情報 -->
+  <div class="novel-header">
+    <!--
+      タイトルを変更してください。
+    -->
+    <h1 class="novel-title">ようこそ、サンタさん</h1>
+
+    <div class="novel-dates">
+      <!--
+        必要な日付だけを残し、不要な <span> は削除してください。
+        作成日・公開日・更新日 のうち表示したいものだけ使えます。
+      -->
+      <span>
+        <em>作成</em>
+        2026年5月1日
+      </span>
+      <span>
+        <em>公開</em>
+        2026年5月4日
+      </span>
+      <!--
+      <span>
+        <em>更新</em>
+        2025年〇月〇日
+      </span>
+      -->
+    </div>
+  </div>
+
+
+  <!-- 縦書き本文 -->
+  <div class="novel-body-wrapper">
+    <p class="scroll-hint">← scroll</p>
+    <article class="novel-body" id="js-novel-body">
+
+      <!--
+        ════════════════════════════════════════
+        【本文の書き方】
+        ・段落ごとに <p>〜</p> で囲んでください。
+        ・ふりがなは <ruby>言葉<rt>ふりがな</rt></ruby> で付けられます。
+          例: <ruby>詩織<rt>しおり</rt></ruby>
+        ・縦書きでは段落間に margin-left が入ります（novel.css で調整可）。
+        ════════════════════════════════════════
+      -->
+
+      <p>
+        　すごく大きい音がして目が覚めた。びっくりするなあ。心臓止まっちゃうよ。<br>
+        「うわっ」<br>
+        　部屋にサンタクロースがいた。赤い帽子に白いひげ。ドラムスティックを握りしめている。<br>
+        「サンタさん、ドラムを持ってきてくれたの？　ほしかったんだ」<br>
+        　さっきの音はドラムのあちこちを一度に鳴らしたものらしい。明日の朝、プレゼントを見つけるのでも全然よかったのに。<br>
+        　サンタさんは帽子を投げつけてきた。ひゃっ、しっとりしてる。なにこれ。気持ち悪いなあ。おじいちゃんの枕みたいなにおいと一緒に、なんだか知ってるにおい。<br>
+        「クソガキめ！　窓の上に牛乳を置きおって入るときに降ってきたじゃないか」<br>
+        　あ、牛乳のにおいか。帽子からにおってくるとむずかしいね。来週友だちにかがせてみよう。<br>
+        　サンタはいらついてる。スティック一本でテンポ一二〇を八分できざんでる。ドラム習ってるのかな。<br>
+        「えんとつから入ってくるんじゃないの？」<br>
+        「だんろすらないだろ！」<br>
+        　バスドラムがドムっと鳴った。<br>
+        　そういえばそうかも。うちの屋根に乗ってるえんとつって飾りなんだ。ぼく知らなかった。<br>
+        「ま、まあ、きげん直してよ。クッキーもあるよ、母さんが作ったやつ。牛乳も注いでこようか？」<br>
+        　ぼくはキッチンに行って牛乳を取ってきて、急いで部屋に戻って、あっ。<br>
+        　転んだ拍子に牛乳がグラスを飛び出して、サンタさんに襲いかかる。逃げようとしたサンタがハイハットシンバルのペダルを踏む。<br>
+        「クソガキ！　父親そっくりだ！　じいさんもそうだった！」<br>
+        「なあに、さわがしい」<br>
+        　サンタさんがうるさくするから母さんが来ちゃった。<br>
+        「あら、あんたもサンタに牛乳かけちゃったの？」
+      </p>
+
+    </article>
+  </div>
+
+  <!-- フッター -->
+  <footer>
+    <p>© 大懶獣舎</p>
+    <p>All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
